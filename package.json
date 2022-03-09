@@ -1,6 +1,6 @@
 {
   "name": "pg-yarn",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Yarn project generator",
   "main": "index.js",
   "repository": "https://github.com/xmenbteam/pg-yarn.git",
