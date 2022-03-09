@@ -1,0 +1,13 @@
+{
+  "name": "pg-yarn",
+  "version": "1.0.0",
+  "description": "Yarn project generator",
+  "main": "index.js",
+  "repository": "https://github.com/xmenbteam/pg-yarn.git",
+  "author": "Sam Parry c/o Northcoders",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "jest": "^27.5.1"
+  }
+}
