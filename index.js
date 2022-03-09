@@ -71,7 +71,7 @@ const projectGenerator = async (projectName, url, cb) => {
         console.log("Pushing...");
         execSync(`cd ${dir} && git push origin main`, { stdio: "ignore" });
       } catch (err) {
-        console.log("Project built without remote! \n", err);
+        console.log("Project built without remote! \n", { err });
       }
     }
 
