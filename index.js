@@ -1,8 +1,9 @@
-const { mkdir, writeFile, readFile, rm } = require("fs/promises");
+const { mkdir, writeFile, readFile } = require("fs/promises");
 const { execSync } = require("child_process");
 
 const zshName = process.argv[1];
 const zshUrl = process.argv[2];
+
 const callBack = (err, success) =>
   console.log(err ? `ERROR --> ${err}` : success);
 
