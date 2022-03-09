@@ -3,13 +3,10 @@ const { execSync } = require("child_process");
 
 const zshName = process.argv[1];
 const zshUrl = process.argv[2];
-const callBack = (err, success) => console.log(err ? err : success);
+const callBack = (err, success) =>
+  console.log(err ? `ERROR --> ${err}` : success);
 
-const projectGenerator = async (
-  projectName,
-  url = "www.placeholder.com",
-  cb
-) => {
+const projectGenerator = async (projectName, url, cb) => {
   const dir = `${__dirname}/${projectName}`;
   const specDir = `${dir}/spec`;
   const readMeHeader = `# ${projectName}`;
@@ -20,6 +17,7 @@ const projectGenerator = async (
   const installCommand = `cd ${dir} && yarn init -y`;
   const gitInit = `cd ${dir} && git init`;
   const installJest = `cd ${dir} && yarn add jest -D`;
+  const gitAddOrigin = `cd ${dir} && git remote add origin ${url}`;
 
   try {
     console.log("Writing Dir...");
@@ -56,10 +54,26 @@ const projectGenerator = async (
     const parsedPackage = JSON.parse(packageJSON);
     newPackage = {
       ...parsedPackage,
-      repository: url,
       scripts: { test: "jest" },
     };
     await writeFile(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
+
+    if (url) {
+      try {
+        console.log(`Adding origin ${url}`);
+        execSync(gitAddOrigin, { stdio: "ignore" });
+        console.log("Staging...");
+        execSync(`cd ${dir} && git add .`, { stdio: "ignore" });
+        console.log("Committing...");
+        execSync(`cd ${dir} && git commit -m "original commit"`, {
+          stdio: "ignore",
+        });
+        console.log("Pushing...");
+        execSync(`cd ${dir} && git push origin main`, { stdio: "ignore" });
+      } catch (err) {
+        console.log("Project built without remote! \n", err);
+      }
+    }
 
     cb(null, "Project built!!");
   } catch (err) {
