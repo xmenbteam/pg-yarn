@@ -1,5 +1,6 @@
 const { mkdir, writeFile, readFile } = require("fs/promises");
-const { execSync } = require("child_process");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 
 const zshName = process.argv[1];
 const zshUrl = process.argv[2];
@@ -28,7 +29,7 @@ const projectGenerator = async (projectName, url, cb) => {
     await writeFile(`${dir}/index.js`, helloWorld);
 
     console.log("Initialising project...");
-    execSync(installCommand, { stdio: "ignore" });
+    await exec(installCommand, { stdio: "ignore" });
 
     console.log(".gitignore...");
     await writeFile(`${dir}/.gitignore`, gitignoreText);
@@ -41,14 +42,15 @@ const projectGenerator = async (projectName, url, cb) => {
     await writeFile(`${dir}/README.md`, readMeHeader);
 
     console.log("Git init...");
-    execSync(gitInit, { stdio: "ignore" });
+    await exec(gitInit, { stdio: "ignore" });
     await writeFile(
       `${dir}/.eslintrc.json`,
       JSON.stringify(eslintText, null, 2)
     );
 
     console.log("Installing jest...");
-    execSync(installJest, { stdio: "ignore" });
+    const { stdout } = await exec(installJest, { stdio: "ignore" });
+    // console.log(stdout);
 
     console.log("Writing test script");
     const packageJSON = await readFile(`${dir}/package.json`);
@@ -62,15 +64,16 @@ const projectGenerator = async (projectName, url, cb) => {
     if (url) {
       try {
         console.log(`Adding origin ${url}`);
-        execSync(gitAddOrigin, { stdio: "ignore" });
+        await exec(gitAddOrigin, { stdio: "ignore" });
         console.log("Staging...");
-        execSync(`cd ${dir} && git add .`, { stdio: "ignore" });
+        await exec(`cd ${dir} && git add .`, { stdio: "ignore" });
         console.log("Committing...");
-        execSync(`cd ${dir} && git commit -m "original commit"`, {
+        await exec(`cd ${dir} && git commit -m "original commit"`, {
           stdio: "ignore",
         });
         console.log("Pushing...");
-        execSync(`cd ${dir} && git push origin main`, { stdio: "ignore" });
+        await exec(`cd ${dir} && git push origin main`, { stdio: "ignore" });
+        console.log("Push successful!");
       } catch (err) {
         console.log("Project built without remote! \n", { err });
       }
