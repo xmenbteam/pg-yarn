@@ -9,5 +9,9 @@
   "private": false,
   "dependencies": {
     "jest": "^27.5.1"
+  },
+  "scripts": {
+    "test": "jest",
+    "init": "node -e 'require(\"./index.js\").init'"
   }
 }

@@ -1,6 +1,11 @@
 const { mkdir, writeFile, readFile, rm } = require("fs/promises");
 const { execSync } = require("child_process");
 
+const zshName = process.argv[1];
+const callBack = (err, success) => console.log(err ? err : success);
+
+console.log({ zshName });
+
 const projectGenerator = async (projectName, cb) => {
   const dir = `./${projectName}`;
   const specDir = `${dir}/spec`;
@@ -49,3 +54,4 @@ const projectGenerator = async (projectName, cb) => {
 };
 
 module.exports = projectGenerator;
+module.exports.init = projectGenerator(zshName, callBack);

@@ -1,6 +1,6 @@
 const projectGenerator = require("../index");
 const fs = require("fs");
-const removeProject = require("./utils.js");
+const removeProject = require("../utils/utils.js");
 
 //'remove the ".skip" on the describe to run the tests'
 describe("project_generator", () => {
