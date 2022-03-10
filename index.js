@@ -8,7 +8,11 @@ const zshUrl = process.argv[2];
 const callBack = (err, success) =>
   console.log(err ? `ERROR --> ${err}` : success);
 
-const projectGenerator = async (projectName, url, cb) => {
+const projectGenerator = async (
+  projectName = "blank-project-name",
+  url,
+  cb
+) => {
   const dir = `${__dirname}/${projectName}`;
   const specDir = `${dir}/spec`;
   const readMeHeader = `# ${projectName}`;
@@ -49,8 +53,8 @@ const projectGenerator = async (projectName, url, cb) => {
     );
 
     console.log("Installing jest...");
-    const { stdout } = await exec(installJest, { stdio: "ignore" });
-    // console.log(stdout);
+    const { stdout: jestOut } = await exec(installJest, { stdio: "ignore" });
+    console.log(jestOut);
 
     console.log("Writing test script");
     const packageJSON = await readFile(`${dir}/package.json`);
@@ -64,22 +68,38 @@ const projectGenerator = async (projectName, url, cb) => {
     if (url) {
       try {
         console.log(`Adding origin ${url}`);
-        await exec(gitAddOrigin, { stdio: "ignore" });
-        console.log("Staging...");
-        await exec(`cd ${dir} && git add .`, { stdio: "ignore" });
-        console.log("Committing...");
-        await exec(`cd ${dir} && git commit -m "original commit"`, {
+        const { stdout: gitOut } = await exec(gitAddOrigin, {
           stdio: "ignore",
         });
+        console.log(gitOut);
+        console.log("Staging...");
+        const { stdout: stagingOut } = await exec(`cd ${dir} && git add .`, {
+          stdio: "ignore",
+        });
+        console.log(stagingOut);
+        console.log("Committing...");
+        const { stdout: commitOut } = await exec(
+          `cd ${dir} && git commit -m "original commit"`,
+          {
+            stdio: "ignore",
+          }
+        );
+        console.log(commitOut);
         console.log("Pushing...");
-        await exec(`cd ${dir} && git push origin main`, { stdio: "ignore" });
+        const { stdout: pushOut } = await exec(
+          `cd ${dir} && git push origin main`,
+          { stdio: "ignore" }
+        );
+        console.log(pushOut);
         console.log("Push successful!");
       } catch (err) {
-        console.log("Project built without remote! \n", { err });
+        console.log("Remote failed! \n", { err });
       }
     }
-
-    cb(null, "Project built!!");
+    const buildMessage = url
+      ? "Project built!!"
+      : "Project built, please add a github remote!";
+    cb(null, buildMessage);
   } catch (err) {
     cb(err, null);
   }
