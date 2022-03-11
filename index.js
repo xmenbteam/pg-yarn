@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { mkdir, writeFile, readFile } = require("fs/promises");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
@@ -89,13 +91,12 @@ const projectGenerator = async (projectName = "my_new_project", url, cb) => {
       }
     }
     const buildMessage = url
-      ? "Project built!!"
+      ? "Project built!"
       : "Project built, please add a github remote!";
     cb(null, buildMessage);
   } catch (err) {
     cb(err, null);
   }
-  cb(null, "success");
 };
 
 module.exports = projectGenerator;

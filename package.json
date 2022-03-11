@@ -2,7 +2,7 @@
   "name": "pg-yarn",
   "version": "1.0.2",
   "description": "Yarn project generator",
-  "main": "index.js",
+  "main": "/Users/samparry/Documents/GitHub/pg-yarn/script.js",
   "repository": "https://github.com/xmenbteam/pg-yarn.git",
   "author": "Sam Parry c/o Northcoders",
   "license": "MIT",
@@ -13,5 +13,8 @@
   "scripts": {
     "test": "jest",
     "pgyarn": "node -e 'require(\"./script.js\").pgyarn'"
+  },
+  "bin": {
+    "pgyarn": "/Users/samparry/Documents/GitHub/pg-yarn/script.js"
   }
 }

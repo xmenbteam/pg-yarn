@@ -6,13 +6,15 @@ const removeProject = require("../utils/utils.js");
 
 jest.setTimeout(100000);
 
-const callBack = (err, success) =>
-  console.log(err ? `ERROR --> ${err}` : success);
 const projName = "my_new_project";
 const url = "www.my-new-project.com";
 
 //'remove the ".skip" on the describe to run the tests'
 describe("project_generator", () => {
+  const callBack = jest.fn((err, success) =>
+    console.log(err ? `ERROR --> ${err}` : success)
+  );
+
   beforeAll(() => {
     removeProject("my_new_project");
     return projectGenerator(projName, undefined, callBack);
@@ -117,9 +119,20 @@ describe("project_generator", () => {
       ).toBe(true);
     });
   });
+  test("Success Message - No Remote", () => {
+    expect(callBack).toHaveBeenCalledTimes(1);
+    expect(callBack).toHaveBeenCalledWith(
+      null,
+      "Project built, please add a github remote!"
+    );
+  });
 });
 
-describe.only("When a URL is provided", () => {
+describe("When a URL is provided", () => {
+  const callBack = jest.fn((err, success) =>
+    console.log(err ? `ERROR --> ${err}` : success)
+  );
+
   beforeAll(() => {
     removeProject("my_new_project");
     return projectGenerator(projName, url, callBack);
@@ -137,6 +150,8 @@ describe.only("When a URL is provided", () => {
       "(push)\n",
     ];
 
+    expect(callBack).toHaveBeenCalledTimes(1);
+    expect(callBack).toHaveBeenCalledWith(null, "Project built!");
     expect(splitMsg).toEqual(answerArr);
   });
   test("Has remote stored in .git folder", async () => {
@@ -150,5 +165,9 @@ describe.only("When a URL is provided", () => {
 
     expect(urlSearch).toBeGreaterThan(0);
     expect(remoteOriginSearch).toBeGreaterThan(0);
+  });
+  test("Success Message - With Remote", () => {
+    expect(callBack).toHaveBeenCalledTimes(1);
+    expect(callBack).toHaveBeenCalledWith(null, "Project built!");
   });
 });
