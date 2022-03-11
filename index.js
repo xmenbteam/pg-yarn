@@ -2,18 +2,7 @@ const { mkdir, writeFile, readFile } = require("fs/promises");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
-const zshName = process.argv[1];
-const zshUrl = process.argv[2];
-
-const callBack = (err, success) =>
-  console.log(err ? `ERROR --> ${err}` : success);
-
-const projectGenerator = async (
-  projectName = "blank-project-name",
-
-  url,
-  cb
-) => {
+const projectGenerator = async (projectName = "my_new_project", url, cb) => {
   const dir = `${__dirname}/${projectName}`;
   const specDir = `${dir}/spec`;
   const readMeHeader = `# ${projectName}`;
@@ -28,7 +17,7 @@ const projectGenerator = async (
 
   try {
     console.log("Writing Dir...");
-    await mkdir(`${dir}`);
+    await mkdir(dir);
 
     console.log("Writing index.js...");
     await writeFile(`${dir}/index.js`, helloWorld);
@@ -106,7 +95,7 @@ const projectGenerator = async (
   } catch (err) {
     cb(err, null);
   }
+  cb(null, "success");
 };
 
 module.exports = projectGenerator;
-module.exports.pgyarn = projectGenerator(zshName, zshUrl, callBack);

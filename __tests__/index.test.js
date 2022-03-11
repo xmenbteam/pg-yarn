@@ -1,128 +1,154 @@
 const projectGenerator = require("../index");
 const fs = require("fs");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 const removeProject = require("../utils/utils.js");
 
-jest.setTimeout(50000)
+jest.setTimeout(100000);
+
+const callBack = (err, success) =>
+  console.log(err ? `ERROR --> ${err}` : success);
+const projName = "my_new_project";
+const url = "www.my-new-project.com";
 
 //'remove the ".skip" on the describe to run the tests'
 describe("project_generator", () => {
-  beforeEach((done) => removeProject("my_new_project", done));
-  afterAll((done) => removeProject("my_new_project", done));
+  beforeAll(() => {
+    removeProject("my_new_project");
+    return projectGenerator(projName, undefined, callBack);
+  });
+  afterAll(() => removeProject("my_new_project"));
 
-  test("writes a new project with the specified name", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.access("./my_new_project", fs.constants.F_OK, (err, stats) => {
-        expect(err).toBe(null); // <-- will be null if directory exists
-        done();
-      });
-    });
+  test("writes a new project with the specified name", async () => {
+    const folder = await fs.promises.access(
+      "./my_new_project",
+      fs.constants.F_OK
+    );
+
+    expect(folder).toBe(undefined); // <-- Will be undefined rather than throwing ENOENT error
   });
-  test("project has an index.js file", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.access(
-        "./my_new_project/index.js",
-        fs.constants.F_OK,
-        (err, stats) => {
-          expect(err).toBe(null);
-          done();
-        }
+  test("project has an index.js file", async () => {
+    const index = await fs.promises.readFile(
+      "./my_new_project/index.js",
+      "utf-8"
+    );
+
+    expect(index).toBe('console.log("hello, world!")');
+  });
+  test("project has a .gitignore ignoring node_modules", async () => {
+    const gitignore = await fs.promises.readFile(
+      "./my_new_project/.gitignore",
+      "utf-8"
+    );
+
+    expect(gitignore).toBe("node_modules");
+  });
+
+  test("has a spec folder", async () => {
+    const specFolder = await fs.promises.readdir(
+      "./my_new_project/spec",
+      "utf-8"
+    );
+    expect(specFolder).toEqual(["index.test.js"]);
+  });
+  test("has a index.test.js inside the spec folder", async () => {
+    const testFile = await fs.promises.readFile(
+      "./my_new_project/spec/index.test.js",
+      "utf-8"
+    );
+
+    expect(testFile).toBe('test.todo("Make some tests");');
+  });
+  test("has a README file with a header containing the name of the project", async () => {
+    const fileContents = await fs.promises.readFile(
+      "./my_new_project/README.md",
+      "utf-8"
+    );
+
+    expect(fileContents).toBe(`# ${"my_new_project"}`);
+  });
+  test("project is initialised as a git repository", async () => {
+    const folder = await fs.promises.readdir("./my_new_project/.git", "utf-8");
+
+    expect(folder).toEqual([
+      "HEAD",
+      "config",
+      "description",
+      "hooks",
+      "info",
+      "objects",
+      "refs",
+    ]);
+  });
+  test("project has a .eslintrc.json config file", async () => {
+    const fileContents = await fs.promises.readFile(
+      "./my_new_project/.eslintrc.json",
+      "utf-8"
+    );
+
+    expect(JSON.parse(fileContents)).toEqual({ toDo: "make some lint" });
+  });
+  describe("Package.json", () => {
+    test("project has a package.json file", async () => {
+      const packageJSON = await fs.promises.readFile(
+        "./my_new_project/package.json",
+        "utf-8"
       );
+      const parsedPackageJSON = JSON.parse(packageJSON);
+      expect(parsedPackageJSON.version).toBe("1.0.0");
     });
-  });
-  test("project has a .gitignore ignoring node_modules", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.readFile("./my_new_project/.gitignore", "utf8", (err, contents) => {
-        expect(err).toBe(null);
-        expect(contents).toBe("node_modules");
-        done();
-      });
-    });
-  });
-  test("project has a .gitignore ignoring node_modules", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.readFile("./my_new_project/.gitignore", "utf8", (err, contents) => {
-        expect(err).toBe(null);
-        expect(contents).toBe("node_modules");
-        done();
-      });
-    });
-  });
-  test("has a spec folder", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.access("./my_new_project/spec", fs.constants.F_OK, (err, contents) => {
-        expect(err).toBe(null);
-        done();
-      });
-    });
-  });
-  test("has a index.test.js inside the spec folder", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.access(
-        "./my_new_project/spec/index.test.js",
-        fs.constants.F_OK,
-        (err) => {
-          expect(err).toBe(null);
-          done();
-        }
+    test("package.json has devDependencies", async () => {
+      const packageJSON = await fs.promises.readFile(
+        "./my_new_project/package.json",
+        "utf-8"
       );
+      const parsedPackageJSON = JSON.parse(packageJSON);
+      expect(parsedPackageJSON).toHaveProperty("devDependencies");
     });
-  });
-  test("has a README file with a header containing the name of the project", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.readFile("./my_new_project/README.md", "utf8", (err, fileContents) => {
-        expect(err).toBe(null);
-        expect(fileContents).toBe(`# ${"my_new_project"}`);
-        done();
-      });
-    });
-  });
-  test("project is initialised as a git repository", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.access(
-        "./my_new_project/.git",
-        fs.constants.F_OK,
-        (err, fileContents) => {
-          expect(err).toBe(null);
-          done();
-        }
+    test("package.json has custom test script", async () => {
+      const packageJSON = await fs.promises.readFile(
+        "./my_new_project/package.json",
+        "utf-8"
       );
+      const parsedPackageJSON = JSON.parse(packageJSON);
+      expect(
+        parsedPackageJSON.scripts.test !==
+          'echo "Error: no test specified" && exit 1'
+      ).toBe(true);
     });
   });
-  test("project has a .eslintrc.json config file", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.access("./my_new_project/.eslintrc.json", fs.constants.F_OK, (err) => {
-        expect(err).toBe(null);
-        done();
-      });
-    });
+});
+
+describe.only("When a URL is provided", () => {
+  beforeAll(() => {
+    removeProject("my_new_project");
+    return projectGenerator(projName, url, callBack);
   });
-  test("project has a package.json file", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.access("./my_new_project/package.json", fs.constants.F_OK, (err) => {
-        expect(err).toBe(null);
-        done();
-      });
+  afterAll(() => removeProject("my_new_project"));
+  test("When provided with a URL, that URL is the git remote", async () => {
+    const { stdout } = await exec(`cd ./my_new_project && git remote -v`, {
+      stdio: "ignore",
     });
+
+    const splitMsg = stdout.split(" ");
+    const answerArr = [
+      "origin\twww.my-new-project.com",
+      "(fetch)\norigin\twww.my-new-project.com",
+      "(push)\n",
+    ];
+
+    expect(splitMsg).toEqual(answerArr);
   });
-  test("package.json file has Dev dependencies", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.readFile("./my_new_project/package.json", "utf8", (err, data) => {
-        const parsedPackageJSON = JSON.parse(data);
-        expect(parsedPackageJSON).toHaveProperty("devDependencies");
-        done();
-      });
-    });
-  });
-  test("package.json test script is not the default", (done) => {
-    projectGenerator("my_new_project", () => {
-      fs.readFile("./my_new_project/package.json", "utf8", (err, data) => {
-        const parsedPackageJSON = JSON.parse(data);
-        expect(
-          parsedPackageJSON.scripts.test !==
-            'echo "Error: no test specified" && exit 1'
-        ).toBe(true);
-        done();
-      });
-    });
+  test("Has remote stored in .git folder", async () => {
+    const configFile = await fs.promises.readFile(
+      "./my_new_project/.git/config",
+      "utf-8"
+    );
+
+    const remoteOriginSearch = configFile.search(`[remote "origin"]`);
+    const urlSearch = configFile.search(url);
+
+    expect(urlSearch).toBeGreaterThan(0);
+    expect(remoteOriginSearch).toBeGreaterThan(0);
   });
 });

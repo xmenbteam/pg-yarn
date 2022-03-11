@@ -12,6 +12,6 @@
   },
   "scripts": {
     "test": "jest",
-    "pgyarn": "node -e 'require(\"./index.js\").pgyarn'"
+    "pgyarn": "node -e 'require(\"./script.js\").pgyarn'"
   }
 }
