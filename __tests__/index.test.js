@@ -2,6 +2,8 @@ const projectGenerator = require("../index");
 const fs = require("fs");
 const removeProject = require("../utils/utils.js");
 
+jest.setTimeout(50000)
+
 //'remove the ".skip" on the describe to run the tests'
 describe("project_generator", () => {
   beforeEach((done) => removeProject("my_new_project", done));
@@ -14,7 +16,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("project has an index.js file", (done) => {
     projectGenerator("my_new_project", () => {
       fs.access(
@@ -26,7 +28,7 @@ describe("project_generator", () => {
         }
       );
     });
-  }, 20000);
+  });
   test("project has a .gitignore ignoring node_modules", (done) => {
     projectGenerator("my_new_project", () => {
       fs.readFile("./my_new_project/.gitignore", "utf8", (err, contents) => {
@@ -35,7 +37,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("project has a .gitignore ignoring node_modules", (done) => {
     projectGenerator("my_new_project", () => {
       fs.readFile("./my_new_project/.gitignore", "utf8", (err, contents) => {
@@ -44,7 +46,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("has a spec folder", (done) => {
     projectGenerator("my_new_project", () => {
       fs.access("./my_new_project/spec", fs.constants.F_OK, (err, contents) => {
@@ -52,7 +54,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("has a index.test.js inside the spec folder", (done) => {
     projectGenerator("my_new_project", () => {
       fs.access(
@@ -64,7 +66,7 @@ describe("project_generator", () => {
         }
       );
     });
-  }, 20000);
+  });
   test("has a README file with a header containing the name of the project", (done) => {
     projectGenerator("my_new_project", () => {
       fs.readFile("./my_new_project/README.md", "utf8", (err, fileContents) => {
@@ -73,7 +75,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("project is initialised as a git repository", (done) => {
     projectGenerator("my_new_project", () => {
       fs.access(
@@ -85,7 +87,7 @@ describe("project_generator", () => {
         }
       );
     });
-  }, 20000);
+  });
   test("project has a .eslintrc.json config file", (done) => {
     projectGenerator("my_new_project", () => {
       fs.access("./my_new_project/.eslintrc.json", fs.constants.F_OK, (err) => {
@@ -93,7 +95,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("project has a package.json file", (done) => {
     projectGenerator("my_new_project", () => {
       fs.access("./my_new_project/package.json", fs.constants.F_OK, (err) => {
@@ -101,7 +103,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("package.json file has Dev dependencies", (done) => {
     projectGenerator("my_new_project", () => {
       fs.readFile("./my_new_project/package.json", "utf8", (err, data) => {
@@ -110,7 +112,7 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
   test("package.json test script is not the default", (done) => {
     projectGenerator("my_new_project", () => {
       fs.readFile("./my_new_project/package.json", "utf8", (err, data) => {
@@ -122,5 +124,5 @@ describe("project_generator", () => {
         done();
       });
     });
-  }, 20000);
+  });
 });

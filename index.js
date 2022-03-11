@@ -10,6 +10,7 @@ const callBack = (err, success) =>
 
 const projectGenerator = async (
   projectName = "blank-project-name",
+
   url,
   cb
 ) => {
@@ -21,7 +22,7 @@ const projectGenerator = async (
   const eslintText = { toDo: "make some lint" };
   const gitignoreText = "node_modules";
   const installCommand = `cd ${dir} && yarn init -y`;
-  const gitInit = `cd ${dir} && git init`;
+  const gitInit = `cd ${dir} && git init --initial-branch=main`;
   const installJest = `cd ${dir} && yarn add jest -D`;
   const gitAddOrigin = `cd ${dir} && git remote add origin ${url}`;
 
@@ -72,6 +73,7 @@ const projectGenerator = async (
           stdio: "ignore",
         });
         console.log(gitOut);
+
         console.log("Staging...");
         const { stdout: stagingOut } = await exec(`cd ${dir} && git add .`, {
           stdio: "ignore",
@@ -85,6 +87,7 @@ const projectGenerator = async (
           }
         );
         console.log(commitOut);
+
         console.log("Pushing...");
         const { stdout: pushOut } = await exec(
           `cd ${dir} && git push origin main`,
