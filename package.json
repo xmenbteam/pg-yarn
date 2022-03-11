@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "jest",
-    "pgyarn": "node -e 'require(\"./script.js\").pgyarn'"
+    "pgyarn": "node -e 'require(\"/Users/samparry/Documents/GitHub/pg-yarn/\").pgyarn'"
   },
   "bin": {
     "pgyarn": "/Users/samparry/Documents/GitHub/pg-yarn/script.js"
