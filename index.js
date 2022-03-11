@@ -1,11 +1,14 @@
-#!/usr/bin/env node
-
 const { mkdir, writeFile, readFile } = require("fs/promises");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
-const projectGenerator = async (projectName = "my_new_project", url, cb) => {
-  const dir = `${__dirname}/${projectName}`;
+const projectGenerator = async (
+  projectName = "my_new_project",
+  path,
+  url,
+  cb
+) => {
+  const dir = `${path}/${projectName}`;
   const specDir = `${dir}/spec`;
   const readMeHeader = `# ${projectName}`;
   const helloWorld = 'console.log("hello, world!")';

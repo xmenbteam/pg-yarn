@@ -17,7 +17,7 @@ describe("project_generator", () => {
 
   beforeAll(() => {
     removeProject("my_new_project");
-    return projectGenerator(projName, undefined, callBack);
+    return projectGenerator(projName, "./", undefined, callBack);
   });
   afterAll(() => removeProject("my_new_project"));
 
@@ -135,7 +135,7 @@ describe("When a URL is provided", () => {
 
   beforeAll(() => {
     removeProject("my_new_project");
-    return projectGenerator(projName, url, callBack);
+    return projectGenerator(projName, "./", url, callBack);
   });
   afterAll(() => removeProject("my_new_project"));
   test("When provided with a URL, that URL is the git remote", async () => {
