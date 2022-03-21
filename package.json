@@ -1,6 +1,6 @@
 {
   "name": "pgyarn",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "Yarn project generator",
   "main": "./script.js",
   "repository": "https://github.com/xmenbteam/pg-yarn.git",
@@ -15,8 +15,8 @@
   },
   "scripts": {
     "test": "jest",
-    "pgyarn": "node -e 'require(\"./script.js\").pgyarn'",
+    "pgyarn": "node -e 'require(\"./dist/script.js\").pgyarn'",
     "tscw": "tsc --watch"
   },
-  "bin": "script.js"
+  "bin": "./dist/script.js"
 }

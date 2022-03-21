@@ -6,8 +6,8 @@ import { removeProject } from "../utils/utils";
 
 jest.setTimeout(100000);
 
-const projName = "my_new_project";
-const url = "www.my-new-project.com";
+const projName: string = "my_new_project";
+const url: string = "www.my-new-project.com";
 
 //'remove the ".skip" on the describe to run the tests'
 describe("project_generator", () => {

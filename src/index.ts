@@ -8,17 +8,17 @@ export const projectGenerator = async (
   url: string,
   cb: Function
 ) => {
-  const dir = `${path}/${projectName}`;
-  const specDir = `${dir}/spec`;
-  const readMeHeader = `# ${projectName}`;
-  const helloWorld = 'console.log("hello, world!")';
-  const testToDo = 'test.todo("Make some tests");';
-  const eslintText = { toDo: "make some lint" };
-  const gitignoreText = "node_modules";
-  const installCommand = `cd ${dir} && yarn init -y`;
-  const gitInit = `cd ${dir} && git init --initial-branch=main`;
-  const installJest = `cd ${dir} && yarn add jest -D`;
-  const gitAddOrigin = `cd ${dir} && git remote add origin ${url}`;
+  const dir: string = `${path}/${projectName}`;
+  const specDir: string = `${dir}/spec`;
+  const readMeHeader: string = `# ${projectName}`;
+  const helloWorld: string = 'console.log("hello, world!")';
+  const testToDo: string = 'test.todo("Make some tests");';
+  const eslintText: object = { toDo: "make some lint" };
+  const gitignoreText: string = "node_modules";
+  const installCommand: string = `cd ${dir} && yarn init -y`;
+  const gitInit: string = `cd ${dir} && git init --initial-branch=main`;
+  const installJest: string = `cd ${dir} && yarn add jest -D`;
+  const gitAddOrigin: string = `cd ${dir} && git remote add origin ${url}`;
 
   try {
     console.log("Writing Dir...");
@@ -52,9 +52,9 @@ export const projectGenerator = async (
     console.log(jestOut);
 
     console.log("Writing test script");
-    const packageJSON = await readFile(`${dir}/package.json`);
-    const parsedPackage = JSON.parse(packageJSON);
-    const newPackage = {
+    const packageJSON: Promise<> = await readFile(`${dir}/package.json`);
+    const parsedPackage: object = JSON.parse(packageJSON);
+    const newPackage: object = {
       ...parsedPackage,
       scripts: { test: "jest" },
     };
