@@ -2,11 +2,11 @@ const { mkdir, writeFile, readFile } = require("fs/promises");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
-const projectGenerator = async (
+export const projectGenerator = async (
   projectName = "my_new_project",
-  path,
-  url,
-  cb
+  path: string,
+  url: string,
+  cb: Function
 ) => {
   const dir = `${path}/${projectName}`;
   const specDir = `${dir}/spec`;
@@ -54,7 +54,7 @@ const projectGenerator = async (
     console.log("Writing test script");
     const packageJSON = await readFile(`${dir}/package.json`);
     const parsedPackage = JSON.parse(packageJSON);
-    newPackage = {
+    const newPackage = {
       ...parsedPackage,
       scripts: { test: "jest" },
     };
@@ -96,10 +96,9 @@ const projectGenerator = async (
     const buildMessage = url
       ? "Project built!"
       : "Project built, please add a github remote!";
+
     cb(null, buildMessage);
   } catch (err) {
     cb(err, null);
   }
 };
-
-module.exports = projectGenerator;

@@ -1,8 +1,8 @@
-const projectGenerator = require("../index");
-const fs = require("fs");
-const util = require("util");
+import { projectGenerator } from "../index";
+import fs from "fs";
+import util from "util";
 const exec = util.promisify(require("child_process").exec);
-const removeProject = require("../utils/utils.js");
+import { removeProject } from "../utils/utils";
 
 jest.setTimeout(100000);
 
@@ -17,7 +17,7 @@ describe("project_generator", () => {
 
   beforeAll(() => {
     removeProject("my_new_project");
-    return projectGenerator(projName, "./", undefined, callBack);
+    return projectGenerator(projName, "./", "", callBack);
   });
   afterAll(() => removeProject("my_new_project"));
 

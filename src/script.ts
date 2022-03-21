@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-const projectGenerator = require("./index.js");
+import { projectGenerator } from "./index";
 
-const zshPath = process.cwd();
-const zshName = process.argv[2];
-const zshUrl = process.argv[3];
+const zshPath: string = process.cwd();
+const zshName: string = process.argv[2];
+const zshUrl: string = process.argv[3];
 
-const callBack = (err, success) =>
+const callBack = (err: Error, success: string) =>
   console.log(err ? `ERROR --> ${err}` : success);
 
 console.log("ProjectName:", zshName);

@@ -32,7 +32,7 @@ npm pack
 
 ```bash
 
-npm install -g pgyarn-1.0.2.tgz
+npm install -g ./pgyarn-1.0.2.tgz
 
 ```
 
