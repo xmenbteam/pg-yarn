@@ -1,6 +1,6 @@
-const fs = require("fs/promises");
+import fs from "fs/promises";
 
-const removeProject = async (projectName) => {
+export const removeProject = async (projectName: string) => {
   try {
     await fs.rm(`./${projectName}`, { recursive: true });
     console.log("project removed...");
@@ -8,5 +8,3 @@ const removeProject = async (projectName) => {
     console.log(err);
   }
 };
-
-module.exports = removeProject;
