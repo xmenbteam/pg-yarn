@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.questions = void 0;
+exports.urlQ = exports.gitHubQs = exports.nameAndFrameWorkQs = void 0;
 const inquirer_1 = require("inquirer");
 const projectName = {
     type: "input",
@@ -30,12 +30,14 @@ const hasGitHubCLIInstalled = {
 const url = {
     type: "input",
     name: "url",
-    message: "Please provide a url",
+    message: "Please provide a url (leave blank if you want to set this up later)",
 };
-exports.questions = [
+exports.nameAndFrameWorkQs = [
     projectName,
     testingFramework,
+];
+exports.gitHubQs = [
     isGithub,
     hasGitHubCLIInstalled,
-    url,
 ];
+exports.urlQ = [url];

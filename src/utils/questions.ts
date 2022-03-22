@@ -39,13 +39,18 @@ const hasGitHubCLIInstalled: ConfirmQuestion = {
 const url: InputQuestion = {
   type: "input",
   name: "url",
-  message: "Please provide a url",
+  message:
+    "Please provide a url (leave blank if you want to set this up later)",
 };
 
-export const questions: QuestionCollection<Answers> = [
+export const nameAndFrameWorkQs: QuestionCollection<Answers> = [
   projectName,
   testingFramework,
+];
+
+export const gitHubQs: QuestionCollection<Answers> = [
   isGithub,
   hasGitHubCLIInstalled,
-  url,
 ];
+
+export const urlQ: QuestionCollection<Answers> = [url];

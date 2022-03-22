@@ -1,5 +1,6 @@
 import { mkdir, writeFile, readFile } from "fs/promises";
 import util from "util";
+import { testingFolder } from "./utils/utils";
 const exec = util.promisify(require("child_process").exec);
 
 export const projectGenerator = async (
@@ -8,11 +9,10 @@ export const projectGenerator = async (
   testingFramework: string,
   isGithub: boolean,
   hasGitHubCLIInstalled: boolean,
-  url: string,
+  url: string = "",
   cb: Function
 ) => {
   const dir: string = `${path}/${projectName}`;
-  const specDir: string = `${dir}/spec`;
   const readMeHeader: string = `# ${projectName}`;
   const helloWorld: string = 'console.log("hello, world!")';
   const testToDo: string = 'test.todo("Make some tests");';
@@ -21,20 +21,10 @@ export const projectGenerator = async (
   const installCommand: string = `cd ${dir} && yarn init -y`;
   const gitInit: string = `cd ${dir} && git init --initial-branch=main`;
   const installTestFramework: string = `cd ${dir} && yarn add ${testingFramework} -D`;
-  const gitAddOrigin: string = hasGitHubCLIInstalled
-    ? `cd ${dir} && gh repo create ${projectName} --private --source=. --remote=upstream`
-    : `cd ${dir} && git remote add origin ${url}`;
+  const gitAddOrigin: string = `cd ${dir} && git remote add origin ${url}`;
+  const gitCLICreate: string = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
 
-  let testFolder;
-
-  switch (testingFramework) {
-    case "jest":
-      testFolder = "__tests__";
-    case "mocha":
-      testFolder = "test";
-    case "chai":
-      testFolder = "test";
-  }
+  let testFolder: string = testingFolder(testingFramework);
 
   try {
     console.log("Writing Dir...");
@@ -49,9 +39,9 @@ export const projectGenerator = async (
     console.log(".gitignore...");
     await writeFile(`${dir}/.gitignore`, gitignoreText);
 
-    console.log("specDir/test.js...");
-    await mkdir(specDir);
-    await writeFile(`${specDir}/index.test.js`, testToDo);
+    console.log(`${testFolder}/test.js...`);
+    await mkdir(`${dir}/${testFolder}`);
+    await writeFile(`${dir}/${testFolder}/index.test.js`, testToDo);
 
     console.log("Readme...");
     await writeFile(`${dir}/README.md`, readMeHeader);
@@ -63,11 +53,11 @@ export const projectGenerator = async (
       JSON.stringify(eslintText, null, 2)
     );
 
-    console.log("Installing jest...");
-    const { stdout: jestOut } = await exec(installTestFramework, {
+    console.log(`Installing ${testingFramework}...`);
+    const { stdout: testOut } = await exec(installTestFramework, {
       stdio: "ignore",
     });
-    console.log(jestOut);
+    console.log(testOut);
 
     console.log("Writing test script");
     const packageJSON: string = await readFile(`${dir}/package.json`, "utf-8");
@@ -80,11 +70,21 @@ export const projectGenerator = async (
 
     if (isGithub) {
       try {
-        console.log(`Adding origin...`);
-        const { stdout: gitOut } = await exec(gitAddOrigin, {
-          stdio: "ignore",
-        });
-        console.log(gitOut);
+        if (url) {
+          console.log(`Adding origin...`);
+          const { stdout: gitOut } = await exec(gitAddOrigin, {
+            stdio: "ignore",
+          });
+          console.log(gitOut);
+        }
+
+        if (hasGitHubCLIInstalled) {
+          console.log(`Creating Github repo...`);
+          const { stdout: githubOut } = await exec(gitCLICreate, {
+            stdio: "ignore",
+          });
+          console.log(githubOut);
+        }
 
         console.log("Staging...");
         const { stdout: stagingOut } = await exec(`cd ${dir} && git add .`, {

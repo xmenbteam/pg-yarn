@@ -191,7 +191,7 @@ describe.only("GH CLI is installed", () => {
   });
   afterAll(() => {
     // exec(`gh auth refresh -h github.com -s delete_repo`);
-    // exec(`gh repo delete my_new_project --confirm`);
+    exec(`gh repo delete my_new_project --confirm`);
     return removeProject("my_new_project");
   });
 
@@ -199,7 +199,13 @@ describe.only("GH CLI is installed", () => {
     const { stdout } = await exec(`cd ./my_new_project && git remote -v`, {
       stdio: "ignore",
     });
+    const split = stdout.split(" ");
 
-    console.log({ stdout });
+    const splitArr = [
+      "origin\thttps://github.com/xmenbteam/my_new_project.git",
+      "(fetch)\norigin\thttps://github.com/xmenbteam/my_new_project.git",
+      "(push)\n",
+    ];
+    expect(split).toEqual(splitArr);
   });
 });

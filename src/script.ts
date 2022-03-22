@@ -2,27 +2,27 @@
 
 import inquirer, { Answers } from "inquirer";
 import { projectGenerator } from "./index";
-import { questions } from "./utils/questions";
+import { nameAndFrameWorkQs, gitHubQs, urlQ } from "./utils/questions";
 
 const zshPath: string = process.cwd();
-// const zshName: string = process.argv[2];
-// const zshUrl: string = process.argv[3];
 
-const answersFunc = async () => {
-  const {
-    projectName,
-    testingFramework,
-    isGithub,
-    hasGitHubCLIInstalled,
-    url,
-  } = await inquirer.prompt(questions);
+const initFunc = async () => {
+  const { projectName, testingFramework } = await inquirer.prompt(
+    nameAndFrameWorkQs
+  );
+
+  const { isGithub, hasGitHubCLIInstalled } = await inquirer.prompt(gitHubQs);
+
+  const { url } = await inquirer.prompt(urlQ);
+
+  console.log({ url, isGithub });
+  console.log("HELLOOOOO");
 
   const callBack = (err: Error, success: string) =>
     console.log(err ? `ERROR --> ${err}` : success);
 
   console.log("ProjectName:", projectName);
   console.log("Path", zshPath);
-  // if (zshUrl) console.log("URL:", zshUrl);
 
   return projectGenerator(
     projectName,
@@ -35,4 +35,4 @@ const answersFunc = async () => {
   );
 };
 
-module.exports.pgyarn = answersFunc();
+module.exports.pgyarn = initFunc();

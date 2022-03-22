@@ -8,3 +8,19 @@ export const removeProject = async (projectName: string) => {
     console.log(err);
   }
 };
+
+export const testingFolder = (testingFramework: string) => {
+  switch (testingFramework) {
+    case "jest":
+      return "__tests__";
+
+    case "mocha":
+      return "test";
+
+    case "chai":
+      return "test";
+
+    default:
+      return "test";
+  }
+};
