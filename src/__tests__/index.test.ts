@@ -17,7 +17,7 @@ describe("project_generator", () => {
 
   beforeAll(() => {
     removeProject("my_new_project");
-    return projectGenerator(projName, "./", "", callBack);
+    return projectGenerator(projName, "./", "jest", false, false, "", callBack);
   });
   afterAll(() => removeProject("my_new_project"));
 
@@ -128,14 +128,22 @@ describe("project_generator", () => {
   });
 });
 
-describe("When a URL is provided", () => {
+describe("When a URL is provided but GH CLI is not installed", () => {
   const callBack = jest.fn((err, success) =>
     console.log(err ? `ERROR --> ${err}` : success)
   );
 
   beforeAll(() => {
     removeProject("my_new_project");
-    return projectGenerator(projName, "./", url, callBack);
+    return projectGenerator(
+      projName,
+      "./",
+      "jest",
+      true,
+      false,
+      "www.my-new-project.com",
+      callBack
+    );
   });
   afterAll(() => removeProject("my_new_project"));
   test("When provided with a URL, that URL is the git remote", async () => {
@@ -169,5 +177,29 @@ describe("When a URL is provided", () => {
   test("Success Message - With Remote", () => {
     expect(callBack).toHaveBeenCalledTimes(1);
     expect(callBack).toHaveBeenCalledWith(null, "Project built!");
+  });
+});
+
+describe.only("GH CLI is installed", () => {
+  const callBack = jest.fn((err, success) =>
+    console.log(err ? `ERROR --> ${err}` : success)
+  );
+
+  beforeAll(() => {
+    removeProject("my_new_project");
+    return projectGenerator(projName, "./", "jest", true, true, "", callBack);
+  });
+  afterAll(() => {
+    // exec(`gh auth refresh -h github.com -s delete_repo`);
+    // exec(`gh repo delete my_new_project --confirm`);
+    return removeProject("my_new_project");
+  });
+
+  test("Inits on Github", async () => {
+    const { stdout } = await exec(`cd ./my_new_project && git remote -v`, {
+      stdio: "ignore",
+    });
+
+    console.log({ stdout });
   });
 });

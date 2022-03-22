@@ -1,10 +1,13 @@
-const { mkdir, writeFile, readFile } = require("fs/promises");
-const util = require("util");
+import { mkdir, writeFile, readFile } from "fs/promises";
+import util from "util";
 const exec = util.promisify(require("child_process").exec);
 
 export const projectGenerator = async (
   projectName = "my_new_project",
   path: string,
+  testingFramework: string,
+  isGithub: boolean,
+  hasGitHubCLIInstalled: boolean,
   url: string,
   cb: Function
 ) => {
@@ -17,8 +20,21 @@ export const projectGenerator = async (
   const gitignoreText: string = "node_modules";
   const installCommand: string = `cd ${dir} && yarn init -y`;
   const gitInit: string = `cd ${dir} && git init --initial-branch=main`;
-  const installJest: string = `cd ${dir} && yarn add jest -D`;
-  const gitAddOrigin: string = `cd ${dir} && git remote add origin ${url}`;
+  const installTestFramework: string = `cd ${dir} && yarn add ${testingFramework} -D`;
+  const gitAddOrigin: string = hasGitHubCLIInstalled
+    ? `cd ${dir} && gh repo create ${projectName} --private --source=. --remote=upstream`
+    : `cd ${dir} && git remote add origin ${url}`;
+
+  let testFolder;
+
+  switch (testingFramework) {
+    case "jest":
+      testFolder = "__tests__";
+    case "mocha":
+      testFolder = "test";
+    case "chai":
+      testFolder = "test";
+  }
 
   try {
     console.log("Writing Dir...");
@@ -48,11 +64,13 @@ export const projectGenerator = async (
     );
 
     console.log("Installing jest...");
-    const { stdout: jestOut } = await exec(installJest, { stdio: "ignore" });
+    const { stdout: jestOut } = await exec(installTestFramework, {
+      stdio: "ignore",
+    });
     console.log(jestOut);
 
     console.log("Writing test script");
-    const packageJSON: Promise<> = await readFile(`${dir}/package.json`);
+    const packageJSON: string = await readFile(`${dir}/package.json`, "utf-8");
     const parsedPackage: object = JSON.parse(packageJSON);
     const newPackage: object = {
       ...parsedPackage,
@@ -60,9 +78,9 @@ export const projectGenerator = async (
     };
     await writeFile(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
 
-    if (url) {
+    if (isGithub) {
       try {
-        console.log(`Adding origin ${url}`);
+        console.log(`Adding origin...`);
         const { stdout: gitOut } = await exec(gitAddOrigin, {
           stdio: "ignore",
         });
@@ -93,7 +111,7 @@ export const projectGenerator = async (
         console.log("Remote failed! \n", { err });
       }
     }
-    const buildMessage = url
+    const buildMessage = isGithub
       ? "Project built!"
       : "Project built, please add a github remote!";
 
