@@ -26,8 +26,6 @@ export const projectGenerator = async (
 
   let testFolder: string = testingFolder(testingFramework);
 
-  console.log({ hasGitHubCLI });
-
   try {
     console.log("Writing Dir...");
     await mkdir(dir);
@@ -85,7 +83,7 @@ export const projectGenerator = async (
           const { stdout: githubOut } = await exec(gitCLICreate, {
             stdio: "ignore",
           });
-          console.log({ githubOut });
+          console.log(`Repo set up @ ${githubOut}`);
         }
 
         console.log("Staging...");

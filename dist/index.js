@@ -21,7 +21,6 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
     const gitAddOrigin = `cd ${dir} && git remote add origin ${url}`;
     const gitCLICreate = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
     let testFolder = (0, utils_1.testingFolder)(testingFramework);
-    console.log({ hasGitHubCLI });
     try {
         console.log("Writing Dir...");
         await (0, promises_1.mkdir)(dir);
@@ -63,7 +62,7 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
                     const { stdout: githubOut } = await exec(gitCLICreate, {
                         stdio: "ignore",
                     });
-                    console.log({ githubOut });
+                    console.log(`Repo set up @ ${githubOut}`);
                 }
                 console.log("Staging...");
                 const { stdout: stagingOut } = await exec(`cd ${dir} && git add .`, {
