@@ -64,7 +64,7 @@ export const projectGenerator = async (
     const parsedPackage: object = JSON.parse(packageJSON);
     const newPackage: object = {
       ...parsedPackage,
-      scripts: { test: "jest" },
+      scripts: { test: testingFramework },
     };
     await writeFile(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
 
@@ -83,7 +83,7 @@ export const projectGenerator = async (
           const { stdout: githubOut } = await exec(gitCLICreate, {
             stdio: "ignore",
           });
-          console.log(githubOut);
+          console.log({ githubOut });
         }
 
         console.log("Staging...");

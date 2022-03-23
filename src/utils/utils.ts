@@ -9,7 +9,7 @@ export const removeProject = async (projectName: string) => {
   }
 };
 
-export const testingFolder = (testingFramework: string) => {
+export const testingFolder = (testingFramework: string): string => {
   switch (testingFramework) {
     case "jest":
       return "__tests__";

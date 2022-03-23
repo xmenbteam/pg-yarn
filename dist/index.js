@@ -46,7 +46,7 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
         console.log("Writing test script");
         const packageJSON = await (0, promises_1.readFile)(`${dir}/package.json`, "utf-8");
         const parsedPackage = JSON.parse(packageJSON);
-        const newPackage = Object.assign(Object.assign({}, parsedPackage), { scripts: { test: "jest" } });
+        const newPackage = Object.assign(Object.assign({}, parsedPackage), { scripts: { test: testingFramework } });
         await (0, promises_1.writeFile)(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
         if (isGithub) {
             try {
@@ -62,7 +62,7 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
                     const { stdout: githubOut } = await exec(gitCLICreate, {
                         stdio: "ignore",
                     });
-                    console.log(githubOut);
+                    console.log({ githubOut });
                 }
                 console.log("Staging...");
                 const { stdout: stagingOut } = await exec(`cd ${dir} && git add .`, {

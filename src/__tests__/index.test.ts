@@ -46,16 +46,16 @@ describe("project_generator", () => {
     expect(gitignore).toBe("node_modules");
   });
 
-  test("has a spec folder", async () => {
+  test("has a __tests__ folder", async () => {
     const specFolder = await fs.promises.readdir(
-      "./my_new_project/spec",
+      "./my_new_project/__tests__",
       "utf-8"
     );
     expect(specFolder).toEqual(["index.test.js"]);
   });
-  test("has a index.test.js inside the spec folder", async () => {
+  test("has a index.test.js inside the __tests__ folder", async () => {
     const testFile = await fs.promises.readFile(
-      "./my_new_project/spec/index.test.js",
+      "./my_new_project/__tests__/index.test.js",
       "utf-8"
     );
 
@@ -180,7 +180,7 @@ describe("When a URL is provided but GH CLI is not installed", () => {
   });
 });
 
-describe.only("GH CLI is installed", () => {
+describe("GH CLI is installed", () => {
   const callBack = jest.fn((err, success) =>
     console.log(err ? `ERROR --> ${err}` : success)
   );
@@ -199,7 +199,7 @@ describe.only("GH CLI is installed", () => {
     const { stdout } = await exec(`cd ./my_new_project && git remote -v`, {
       stdio: "ignore",
     });
-    const split = stdout.split(" ");
+    const split = stdout.split(" ").filter((e: string) => e);
 
     const splitArr = [
       "origin\thttps://github.com/xmenbteam/my_new_project.git",
