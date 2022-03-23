@@ -8,7 +8,7 @@ export const projectGenerator = async (
   path: string,
   testingFramework: string,
   isGithub: boolean,
-  hasGitHubCLIInstalled: boolean,
+  hasGitHubCLI: boolean,
   url: string = "",
   cb: Function
 ) => {
@@ -25,6 +25,8 @@ export const projectGenerator = async (
   const gitCLICreate: string = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
 
   let testFolder: string = testingFolder(testingFramework);
+
+  console.log({ hasGitHubCLI });
 
   try {
     console.log("Writing Dir...");
@@ -78,7 +80,7 @@ export const projectGenerator = async (
           console.log(gitOut);
         }
 
-        if (hasGitHubCLIInstalled) {
+        if (hasGitHubCLI) {
           console.log(`Creating Github repo...`);
           const { stdout: githubOut } = await exec(gitCLICreate, {
             stdio: "ignore",

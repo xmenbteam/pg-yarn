@@ -11,12 +11,9 @@ const initFunc = async () => {
     nameAndFrameWorkQs
   );
 
-  const { isGithub, hasGitHubCLIInstalled } = await inquirer.prompt(gitHubQs);
+  const { isGithub, hasGitHubCLI } = await inquirer.prompt(gitHubQs);
 
   const { url } = await inquirer.prompt(urlQ);
-
-  console.log({ url, isGithub });
-  console.log("HELLOOOOO");
 
   const callBack = (err: Error, success: string) =>
     console.log(err ? `ERROR --> ${err}` : success);
@@ -29,7 +26,7 @@ const initFunc = async () => {
     zshPath,
     testingFramework,
     isGithub,
-    hasGitHubCLIInstalled,
+    hasGitHubCLI,
     url,
     callBack
   );

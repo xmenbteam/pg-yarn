@@ -190,7 +190,6 @@ describe("GH CLI is installed", () => {
     return projectGenerator(projName, "./", "jest", true, true, "", callBack);
   });
   afterAll(() => {
-    // exec(`gh auth refresh -h github.com -s delete_repo`);
     exec(`gh repo delete my_new_project --confirm`);
     return removeProject("my_new_project");
   });

@@ -8,7 +8,7 @@ const promises_1 = require("fs/promises");
 const util_1 = __importDefault(require("util"));
 const utils_1 = require("./utils/utils");
 const exec = util_1.default.promisify(require("child_process").exec);
-const projectGenerator = async (projectName = "my_new_project", path, testingFramework, isGithub, hasGitHubCLIInstalled, url = "", cb) => {
+const projectGenerator = async (projectName = "my_new_project", path, testingFramework, isGithub, hasGitHubCLI, url = "", cb) => {
     const dir = `${path}/${projectName}`;
     const readMeHeader = `# ${projectName}`;
     const helloWorld = 'console.log("hello, world!")';
@@ -21,6 +21,7 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
     const gitAddOrigin = `cd ${dir} && git remote add origin ${url}`;
     const gitCLICreate = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
     let testFolder = (0, utils_1.testingFolder)(testingFramework);
+    console.log({ hasGitHubCLI });
     try {
         console.log("Writing Dir...");
         await (0, promises_1.mkdir)(dir);
@@ -57,7 +58,7 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
                     });
                     console.log(gitOut);
                 }
-                if (hasGitHubCLIInstalled) {
+                if (hasGitHubCLI) {
                     console.log(`Creating Github repo...`);
                     const { stdout: githubOut } = await exec(gitCLICreate, {
                         stdio: "ignore",
