@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import inquirer, { Answers } from "inquirer";
+import inquirer from "inquirer";
 import { projectGenerator } from "./index";
 import { nameAndFrameWorkQs, gitHubQs, urlQ } from "./utils/questions";
 
