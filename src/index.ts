@@ -2,10 +2,13 @@ import { mkdir, writeFile, readFile } from "fs/promises";
 import util from "util";
 import { testingFolder } from "./utils/utils";
 const exec = util.promisify(require("child_process").exec);
+import { sampleTSConfig } from "./utils/sampleJSONs/sampleTSConfig";
+import { fstat } from "fs";
 
 export const projectGenerator = async (
   projectName = "my_new_project",
   path: string,
+  isTypeScript: boolean,
   testingFramework: string,
   isGithub: boolean,
   hasGitHubCLI: boolean,
@@ -21,6 +24,8 @@ export const projectGenerator = async (
   const installCommand: string = `cd ${dir} && yarn init -y`;
   const gitInit: string = `cd ${dir} && git init --initial-branch=main`;
   const installTestFramework: string = `cd ${dir} && yarn add ${testingFramework} -D`;
+  const TSInstall = `tsc --init`;
+  const TSDev = `yarn add typescript --save-dev`;
   const gitAddOrigin: string = `cd ${dir} && git remote add origin ${url}`;
   const gitCLICreate: string = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
 
@@ -68,6 +73,23 @@ export const projectGenerator = async (
     };
     await writeFile(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
 
+    if (isTypeScript) {
+      console.log(`Installing TypeScript...`);
+      const { stdout: tsinstout } = await exec(TSDev, {
+        stdio: "ignore",
+      });
+      console.log(tsinstout);
+      console.log(`Adding TSConfig...`);
+      const { stdout: tsOut } = await exec(TSInstall, {
+        stdio: "ignore",
+      });
+      console.log(tsOut);
+
+      await writeFile(
+        `${dir}/tsconfig.json`,
+        JSON.stringify(sampleTSConfig, null, 2)
+      );
+    }
     if (isGithub) {
       try {
         if (url) {
@@ -87,25 +109,17 @@ export const projectGenerator = async (
         }
 
         console.log("Staging...");
-        const { stdout: stagingOut } = await exec(`cd ${dir} && git add .`, {
+        await exec(`cd ${dir} && git add .`, {
           stdio: "ignore",
         });
-        console.log(stagingOut);
+
         console.log("Committing...");
-        const { stdout: commitOut } = await exec(
-          `cd ${dir} && git commit -m "original commit"`,
-          {
-            stdio: "ignore",
-          }
-        );
-        console.log(commitOut);
+        await exec(`cd ${dir} && git commit -m "original commit"`, {
+          stdio: "ignore",
+        });
 
         console.log("Pushing...");
-        const { stdout: pushOut } = await exec(
-          `cd ${dir} && git push origin main`,
-          { stdio: "ignore" }
-        );
-        console.log(pushOut);
+        await exec(`cd ${dir} && git push origin main`, { stdio: "ignore" });
         console.log("Push successful!");
       } catch (err) {
         console.log("Remote failed! \n", { err });

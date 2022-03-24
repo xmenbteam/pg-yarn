@@ -17,7 +17,16 @@ describe("project_generator", () => {
 
   beforeAll(() => {
     removeProject("my_new_project");
-    return projectGenerator(projName, "./", "jest", false, false, "", callBack);
+    return projectGenerator(
+      projName,
+      "./",
+      false,
+      "jest",
+      false,
+      false,
+      "",
+      callBack
+    );
   });
   afterAll(() => removeProject("my_new_project"));
 
@@ -138,6 +147,7 @@ describe("When a URL is provided but GH CLI is not installed", () => {
     return projectGenerator(
       projName,
       "./",
+      false,
       "jest",
       true,
       false,
@@ -187,7 +197,16 @@ describe("GH CLI is installed", () => {
 
   beforeAll(() => {
     removeProject("my_new_project");
-    return projectGenerator(projName, "./", "jest", true, true, "", callBack);
+    return projectGenerator(
+      projName,
+      "./",
+      false,
+      "jest",
+      true,
+      true,
+      "",
+      callBack
+    );
   });
   afterAll(() => {
     exec(`gh repo delete my_new_project --confirm`);
@@ -206,5 +225,35 @@ describe("GH CLI is installed", () => {
       "(push)\n",
     ];
     expect(split).toEqual(splitArr);
+  });
+});
+
+describe.only("typescript", () => {
+  const callBack = jest.fn((err, success) =>
+    console.log(err ? `ERROR --> ${err}` : success)
+  );
+  beforeAll(() => {
+    removeProject("my_new_project");
+    return projectGenerator(
+      projName,
+      "../",
+      true,
+      "jest",
+      true,
+      true,
+      "",
+      callBack
+    );
+  });
+  afterAll(() => {
+    exec(`gh repo delete my_new_project --confirm`);
+    return removeProject("../my_new_project");
+  });
+
+  test("inits typescript", async () => {
+    const folder = await fs.promises.readdir("../my_new_project", "utf-8");
+
+    console.log(folder);
+    expect(folder).toContain("tsconfig.json");
   });
 });

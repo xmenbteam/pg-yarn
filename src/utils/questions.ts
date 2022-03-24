@@ -14,6 +14,13 @@ const projectName: InputQuestion = {
   default: "my_new_project",
 };
 
+const isTypeScript: ConfirmQuestion = {
+  type: "confirm",
+  name: "isTypeScript",
+  message: "Would you like to set the project up with TypeScript?",
+  default: true,
+};
+
 const testingFramework: ListQuestion = {
   type: "list",
   name: "testingFramework",
@@ -45,6 +52,7 @@ const url: InputQuestion = {
 
 export const nameAndFrameWorkQs: QuestionCollection<Answers> = [
   projectName,
+  isTypeScript,
   testingFramework,
 ];
 

@@ -7,7 +7,7 @@ import { nameAndFrameWorkQs, gitHubQs, urlQ } from "./utils/questions";
 const zshPath: string = process.cwd();
 
 const initFunc = async () => {
-  const { projectName, testingFramework } = await inquirer.prompt(
+  const { projectName, isTypeScript, testingFramework } = await inquirer.prompt(
     nameAndFrameWorkQs
   );
 
@@ -24,6 +24,7 @@ const initFunc = async () => {
   return projectGenerator(
     projectName,
     zshPath,
+    isTypeScript,
     testingFramework,
     isGithub,
     hasGitHubCLI,

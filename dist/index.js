@@ -8,7 +8,8 @@ const promises_1 = require("fs/promises");
 const util_1 = __importDefault(require("util"));
 const utils_1 = require("./utils/utils");
 const exec = util_1.default.promisify(require("child_process").exec);
-const projectGenerator = async (projectName = "my_new_project", path, testingFramework, isGithub, hasGitHubCLI, url = "", cb) => {
+const sampleTSConfig_1 = require("./utils/sampleJSONs/sampleTSConfig");
+const projectGenerator = async (projectName = "my_new_project", path, isTypeScript, testingFramework, isGithub, hasGitHubCLI, url = "", cb) => {
     const dir = `${path}/${projectName}`;
     const readMeHeader = `# ${projectName}`;
     const helloWorld = 'console.log("hello, world!")';
@@ -18,6 +19,8 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
     const installCommand = `cd ${dir} && yarn init -y`;
     const gitInit = `cd ${dir} && git init --initial-branch=main`;
     const installTestFramework = `cd ${dir} && yarn add ${testingFramework} -D`;
+    const TSInstall = `tsc --init`;
+    const TSDev = `yarn add typescript --save-dev`;
     const gitAddOrigin = `cd ${dir} && git remote add origin ${url}`;
     const gitCLICreate = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
     let testFolder = (0, utils_1.testingFolder)(testingFramework);
@@ -48,6 +51,19 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
         const parsedPackage = JSON.parse(packageJSON);
         const newPackage = Object.assign(Object.assign({}, parsedPackage), { scripts: { test: testingFramework } });
         await (0, promises_1.writeFile)(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
+        if (isTypeScript) {
+            console.log(`Installing TypeScript...`);
+            const { stdout: tsinstout } = await exec(TSDev, {
+                stdio: "ignore",
+            });
+            console.log(tsinstout);
+            console.log(`Adding TSConfig...`);
+            const { stdout: tsOut } = await exec(TSInstall, {
+                stdio: "ignore",
+            });
+            console.log(tsOut);
+            await (0, promises_1.writeFile)(`${dir}/tsconfig.json`, JSON.stringify(sampleTSConfig_1.sampleTSConfig, null, 2));
+        }
         if (isGithub) {
             try {
                 if (url) {
@@ -65,18 +81,15 @@ const projectGenerator = async (projectName = "my_new_project", path, testingFra
                     console.log(`Repo set up @ ${githubOut}`);
                 }
                 console.log("Staging...");
-                const { stdout: stagingOut } = await exec(`cd ${dir} && git add .`, {
+                await exec(`cd ${dir} && git add .`, {
                     stdio: "ignore",
                 });
-                console.log(stagingOut);
                 console.log("Committing...");
-                const { stdout: commitOut } = await exec(`cd ${dir} && git commit -m "original commit"`, {
+                await exec(`cd ${dir} && git commit -m "original commit"`, {
                     stdio: "ignore",
                 });
-                console.log(commitOut);
                 console.log("Pushing...");
-                const { stdout: pushOut } = await exec(`cd ${dir} && git push origin main`, { stdio: "ignore" });
-                console.log(pushOut);
+                await exec(`cd ${dir} && git push origin main`, { stdio: "ignore" });
                 console.log("Push successful!");
             }
             catch (err) {

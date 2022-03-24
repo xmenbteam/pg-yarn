@@ -8,6 +8,12 @@ const projectName = {
     message: "What do you want your project to be called?!",
     default: "my_new_project",
 };
+const isTypeScript = {
+    type: "confirm",
+    name: "isTypeScript",
+    message: "Would you like to set the project up with TypeScript?",
+    default: true,
+};
 const testingFramework = {
     type: "list",
     name: "testingFramework",
@@ -34,6 +40,7 @@ const url = {
 };
 exports.nameAndFrameWorkQs = [
     projectName,
+    isTypeScript,
     testingFramework,
 ];
 exports.gitHubQs = [
