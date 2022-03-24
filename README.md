@@ -2,6 +2,10 @@
 
 - Initialises a Yarn repository with jest installed.
 
+## Version 3.0.0
+
+- Now with option to install Typescript!
+
 ## Version 2.0.0
 
 - Now with added Inquirer funtimes.
