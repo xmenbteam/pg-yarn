@@ -6,6 +6,8 @@
 
 - Now with option to install Typescript!
 
+- Need to have Typescript globally installed - `npm install -g typescript`
+
 ## Version 2.0.0
 
 - Now with added Inquirer funtimes.
