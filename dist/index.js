@@ -71,12 +71,10 @@ const projectGenerator = async (projectName = "my_new_project", path, isTypeScri
             console.log(tsOut);
             await (0, promises_1.writeFile)(`${dir}/tsconfig.json`, JSON.stringify(sampleTSConfig_1.sampleTSConfig, null, 2));
             console.log("Jest config...");
-            await (0, promises_1.writeFile)(`${dir}/jes.config.js`, JSON.stringify({
-                "module.exports": {
-                    preset: "ts-jest",
-                    testEnvironment: "node",
-                },
-            }, null, 2));
+            await (0, promises_1.writeFile)(`${dir}/jest.config.js`, JSON.stringify((module.exports = {
+                preset: "ts-jest",
+                testEnvironment: "node",
+            }), null, 2));
             console.log("Jest types...");
             const { stdout: jestTypesOut } = await exec(TSJestTypes);
             console.log(jestTypesOut);

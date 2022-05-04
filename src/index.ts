@@ -97,14 +97,12 @@ export const projectGenerator = async (
 
       console.log("Jest config...");
       await writeFile(
-        `${dir}/jes.config.js`,
+        `${dir}/jest.config.js`,
         JSON.stringify(
-          {
-            "module.exports": {
-              preset: "ts-jest",
-              testEnvironment: "node",
-            },
-          },
+          (module.exports = {
+            preset: "ts-jest",
+            testEnvironment: "node",
+          }),
           null,
           2
         )
