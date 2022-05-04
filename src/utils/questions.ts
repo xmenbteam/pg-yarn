@@ -47,7 +47,7 @@ const url: InputQuestion = {
   type: "input",
   name: "url",
   message:
-    "Please provide a url (leave blank if you want to set this up later)",
+    "Please provide a url (LEAVE BLANK if you have Github CLI installed/want to set this up later)",
 };
 
 export const nameAndFrameWorkQs: QuestionCollection<Answers> = [

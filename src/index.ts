@@ -24,8 +24,10 @@ export const projectGenerator = async (
   const installCommand: string = `cd ${dir} && yarn init -y`;
   const gitInit: string = `cd ${dir} && git init --initial-branch=main`;
   const installTestFramework: string = `cd ${dir} && yarn add ${testingFramework} -D`;
-  const TSInstall = `tsc --init`;
-  const TSDev = `yarn add typescript --save-dev`;
+  const TSInstall = `cd ${dir} && tsc --init`;
+  const TSDev = `cd ${dir} && yarn add typescript --save-dev`;
+  const TSJestTypes = `cd ${dir} && yarn add @types/jest`;
+  const ex = isTypeScript ? "ts" : "js";
   const gitAddOrigin: string = `cd ${dir} && git remote add origin ${url}`;
   const gitCLICreate: string = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
 
@@ -35,8 +37,11 @@ export const projectGenerator = async (
     console.log("Writing Dir...");
     await mkdir(dir);
 
-    console.log("Writing index.js...");
-    await writeFile(`${dir}/index.js`, helloWorld);
+    console.log(`Writing index.${ex}...`);
+    if (isTypeScript) {
+      await mkdir(`${dir}/src`);
+      await writeFile(`${dir}/src/index.ts`, helloWorld);
+    } else await writeFile(`${dir}/index.js`, helloWorld);
 
     console.log("Initialising project...");
     await exec(installCommand, { stdio: "ignore" });
@@ -44,7 +49,7 @@ export const projectGenerator = async (
     console.log(".gitignore...");
     await writeFile(`${dir}/.gitignore`, gitignoreText);
 
-    console.log(`${testFolder}/test.js...`);
+    console.log(`${testFolder}/test.${ex}...`);
     await mkdir(`${dir}/${testFolder}`);
     await writeFile(`${dir}/${testFolder}/index.test.js`, testToDo);
 
@@ -69,7 +74,7 @@ export const projectGenerator = async (
     const parsedPackage: object = JSON.parse(packageJSON);
     const newPackage: object = {
       ...parsedPackage,
-      scripts: { test: testingFramework },
+      scripts: { test: `${testingFramework} ./src`, tscw: "tsc --watch" },
     };
     await writeFile(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
 
@@ -89,6 +94,24 @@ export const projectGenerator = async (
         `${dir}/tsconfig.json`,
         JSON.stringify(sampleTSConfig, null, 2)
       );
+
+      console.log("Jest config...");
+      await writeFile(
+        `${dir}/jes.config.js`,
+        JSON.stringify(
+          {
+            "module.exports": {
+              preset: "ts-jest",
+              testEnvironment: "node",
+            },
+          },
+          null,
+          2
+        )
+      );
+      console.log("Jest types...");
+      const { stdout: jestTypesOut } = await exec(TSJestTypes);
+      console.log(jestTypesOut);
     }
     if (isGithub) {
       try {
@@ -126,8 +149,8 @@ export const projectGenerator = async (
       }
     }
     const buildMessage = isGithub
-      ? "Project built!"
-      : "Project built, please add a github remote!";
+      ? `Project built! cd into ./${projectName} to get started!`
+      : `Project built, please add a github remote! cd into ./${projectName} to get started!`;
 
     cb(null, buildMessage);
   } catch (err) {

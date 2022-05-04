@@ -36,7 +36,7 @@ const hasGitHubCLIInstalled = {
 const url = {
     type: "input",
     name: "url",
-    message: "Please provide a url (leave blank if you want to set this up later)",
+    message: "Please provide a url (LEAVE BLANK if you have Github CLI installed/want to set this up later)",
 };
 exports.nameAndFrameWorkQs = [
     projectName,

@@ -132,7 +132,7 @@ describe("project_generator", () => {
     expect(callBack).toHaveBeenCalledTimes(1);
     expect(callBack).toHaveBeenCalledWith(
       null,
-      "Project built, please add a github remote!"
+      "Project built, please add a github remote! cd into ./my_new_project to get started!"
     );
   });
 });
@@ -169,7 +169,10 @@ describe("When a URL is provided but GH CLI is not installed", () => {
     ];
 
     expect(callBack).toHaveBeenCalledTimes(1);
-    expect(callBack).toHaveBeenCalledWith(null, "Project built!");
+    expect(callBack).toHaveBeenCalledWith(
+      null,
+      "Project built! cd into ./my_new_project to get started!"
+    );
     expect(splitMsg).toEqual(answerArr);
   });
   test("Has remote stored in .git folder", async () => {
@@ -186,7 +189,10 @@ describe("When a URL is provided but GH CLI is not installed", () => {
   });
   test("Success Message - With Remote", () => {
     expect(callBack).toHaveBeenCalledTimes(1);
-    expect(callBack).toHaveBeenCalledWith(null, "Project built!");
+    expect(callBack).toHaveBeenCalledWith(
+      null,
+      "Project built! cd into ./my_new_project to get started!"
+    );
   });
 });
 
@@ -253,7 +259,12 @@ describe.only("typescript", () => {
   test("inits typescript", async () => {
     const folder = await fs.promises.readdir("../my_new_project", "utf-8");
 
-    console.log(folder);
+    // console.log(folder);
     expect(folder).toContain("tsconfig.json");
+  });
+  test("/src/index.ts", async () => {
+    const folder = await fs.promises.readdir("../my_new_project/src", "utf-8");
+    // console.log(folder);
+    expect(folder).toContain("index.ts");
   });
 });

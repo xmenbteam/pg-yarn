@@ -19,21 +19,28 @@ const projectGenerator = async (projectName = "my_new_project", path, isTypeScri
     const installCommand = `cd ${dir} && yarn init -y`;
     const gitInit = `cd ${dir} && git init --initial-branch=main`;
     const installTestFramework = `cd ${dir} && yarn add ${testingFramework} -D`;
-    const TSInstall = `tsc --init`;
-    const TSDev = `yarn add typescript --save-dev`;
+    const TSInstall = `cd ${dir} && tsc --init`;
+    const TSDev = `cd ${dir} && yarn add typescript --save-dev`;
+    const TSJestTypes = `cd ${dir} && yarn add @types/jest`;
+    const ex = isTypeScript ? "ts" : "js";
     const gitAddOrigin = `cd ${dir} && git remote add origin ${url}`;
     const gitCLICreate = `cd ${dir} && gh repo create ${projectName} --public --source=. --remote=origin`;
     let testFolder = (0, utils_1.testingFolder)(testingFramework);
     try {
         console.log("Writing Dir...");
         await (0, promises_1.mkdir)(dir);
-        console.log("Writing index.js...");
-        await (0, promises_1.writeFile)(`${dir}/index.js`, helloWorld);
+        console.log(`Writing index.${ex}...`);
+        if (isTypeScript) {
+            await (0, promises_1.mkdir)(`${dir}/src`);
+            await (0, promises_1.writeFile)(`${dir}/src/index.ts`, helloWorld);
+        }
+        else
+            await (0, promises_1.writeFile)(`${dir}/index.js`, helloWorld);
         console.log("Initialising project...");
         await exec(installCommand, { stdio: "ignore" });
         console.log(".gitignore...");
         await (0, promises_1.writeFile)(`${dir}/.gitignore`, gitignoreText);
-        console.log(`${testFolder}/test.js...`);
+        console.log(`${testFolder}/test.${ex}...`);
         await (0, promises_1.mkdir)(`${dir}/${testFolder}`);
         await (0, promises_1.writeFile)(`${dir}/${testFolder}/index.test.js`, testToDo);
         console.log("Readme...");
@@ -49,7 +56,7 @@ const projectGenerator = async (projectName = "my_new_project", path, isTypeScri
         console.log("Writing test script");
         const packageJSON = await (0, promises_1.readFile)(`${dir}/package.json`, "utf-8");
         const parsedPackage = JSON.parse(packageJSON);
-        const newPackage = Object.assign(Object.assign({}, parsedPackage), { scripts: { test: testingFramework } });
+        const newPackage = Object.assign(Object.assign({}, parsedPackage), { scripts: { test: `${testingFramework} ./src`, tscw: "tsc --watch" } });
         await (0, promises_1.writeFile)(`${dir}/package.json`, JSON.stringify(newPackage, null, 2));
         if (isTypeScript) {
             console.log(`Installing TypeScript...`);
@@ -63,6 +70,16 @@ const projectGenerator = async (projectName = "my_new_project", path, isTypeScri
             });
             console.log(tsOut);
             await (0, promises_1.writeFile)(`${dir}/tsconfig.json`, JSON.stringify(sampleTSConfig_1.sampleTSConfig, null, 2));
+            console.log("Jest config...");
+            await (0, promises_1.writeFile)(`${dir}/jes.config.js`, JSON.stringify({
+                "module.exports": {
+                    preset: "ts-jest",
+                    testEnvironment: "node",
+                },
+            }, null, 2));
+            console.log("Jest types...");
+            const { stdout: jestTypesOut } = await exec(TSJestTypes);
+            console.log(jestTypesOut);
         }
         if (isGithub) {
             try {
@@ -97,8 +114,8 @@ const projectGenerator = async (projectName = "my_new_project", path, isTypeScri
             }
         }
         const buildMessage = isGithub
-            ? "Project built!"
-            : "Project built, please add a github remote!";
+            ? `Project built! cd into ./${projectName} to get started!`
+            : `Project built, please add a github remote! cd into ./${projectName} to get started!`;
         cb(null, buildMessage);
     }
     catch (err) {
